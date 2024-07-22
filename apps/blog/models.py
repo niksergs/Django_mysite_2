@@ -17,8 +17,8 @@ class Post(models.Model):
     text = models.TextField(verbose_name='Полный текст записи')
     thumbnail = models.ImageField(default='default.jpg',
                                   verbose_name='Изображение записи',
-                                  blnk=True,
-                                  uplod_to='images/thumbnails/',
+                                  blank=True,
+                                  upload_to='images/thumbnails/',
                                   validators=[FileExtensionValidator(allowed_extensions=('png', 'jpg', 'webp', 'jpeg',
                                                                                          'gif'))]
                                   )
