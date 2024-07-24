@@ -1,6 +1,7 @@
 from django.db import models
 from django.core.validators import FileExtensionValidator
 from django.contrib.auth.models import User
+from django.urls import reverse
 from mptt.models import MPTTModel, TreeForeignKey   # Приложение для создания древовидной модели в админке
 
 
@@ -21,7 +22,7 @@ class Post(models.Model):
     thumbnail = models.ImageField(default='default.jpg',
                                   verbose_name='Изображение записи',
                                   blank=True,
-                                  upload_to='images/thumbnails/',
+                                  upload_to='images/thumbnails/%Y/%m/%d/',
                                   validators=[FileExtensionValidator(allowed_extensions=('png', 'jpg', 'webp', 'jpeg',
                                                                                          'gif'))]
                                   )
@@ -44,6 +45,12 @@ class Post(models.Model):
 
     def __str__(self):
         return self.title
+
+    def get_absolute_url(self):
+        """Получаем прямую ссылку на статью.
+        Данный метод позволяет получать прямую ссылку на статью, без вызова {% url '' %}
+        Также мы импортировали reverse для формирования правильной ссылки."""
+        return reverse('post_detail', kwargs={'slug': self.slug})
 
 
 class Category(MPTTModel):
