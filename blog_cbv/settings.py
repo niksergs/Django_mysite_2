@@ -16,6 +16,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'mptt',                             # Приложение для создания древовидной модели в админке
+    'django_mptt_admin',                # Приложение для улучшения визуального вида древовидной модели в админке
+
     'apps.blog.apps.BlogConfig',        # Основное приложение Блог
                                         # Приложение для регистрации
                                         # Приложение Блог API

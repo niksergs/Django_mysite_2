@@ -1,5 +1,14 @@
 from django.contrib import admin
-from .models import Post
+
+# Приложение для улучшения визуального вида категорий со вложенностью
+from django_mptt_admin.admin import DjangoMpttAdmin
+from .models import Category, Post
+
+
+@admin.register(Category)
+class CategoryAdmin(DjangoMpttAdmin):
+    """Админ-панель модели категорий"""
+    prepopulated_fields = {'slug': ('title',)}
 
 
 admin.site.register(Post)
