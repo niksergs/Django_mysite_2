@@ -3,6 +3,7 @@ from django.core.validators import FileExtensionValidator
 from django.contrib.auth.models import User
 from django.urls import reverse
 from mptt.models import MPTTModel, TreeForeignKey   # Приложение для создания древовидной модели в админке
+from apps.services.utils import unique_slugify      # Генератор уникальных SLUG для моделей, в случае существования такого SLUG.
 
 
 class Post(models.Model):
@@ -14,7 +15,7 @@ class Post(models.Model):
     )
 
     title = models.CharField(verbose_name='Название записи', max_length=255)
-    slug = models.SlugField(verbose_name='URL', max_length=255, blank=True, unique=True)
+    slug = models.SlugField(verbose_name='URL', max_length=255, blank=True)
     description = models.TextField(verbose_name='Краткое описание', max_length=500)
     text = models.TextField(verbose_name='Полный текст записи')
     # Включение в модель модели "Категории", для отображения древовидной модели в админке
@@ -51,6 +52,11 @@ class Post(models.Model):
         Данный метод позволяет получать прямую ссылку на статью, без вызова {% url '' %}
         Также мы импортировали reverse для формирования правильной ссылки."""
         return reverse('post_detail', kwargs={'slug': self.slug})
+
+    def save(self, *args, **kwargs):
+        """При сохранении генерируем слаг и проверяем на уникальность"""
+        self.slug = unique_slugify(self, self.title)
+        super().save(*args, **kwargs)
 
 
 class Category(MPTTModel):
