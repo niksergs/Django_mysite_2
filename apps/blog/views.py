@@ -23,6 +23,8 @@ class PostListView(ListView):
     # Переопределим имя Queryset по умолчанию object_list, установив атрибут context_object_name = 'posts'.
     # Это помогает иметь более удобное для работы имя.
     context_object_name = 'posts'
+    # Ограничение для отображения заданного количества записей на странице
+    paginate_by = 5
 
     def get_context_data(self, **kwargs):
         """Функция get_context_data может использоваться для передачи содержимого или параметров вне модели в шаблон,
@@ -62,6 +64,8 @@ class PostFromCategory(ListView):
     template_name = 'blog/post_list.html'
     # Переопределим имя Queryset по умолчанию.
     context_object_name = 'posts'
+    # Ограничение для отображения заданного количества записей на странице
+    paginate_by = 5
     # Переменная, по которой мы будем работать
     category = None
 
