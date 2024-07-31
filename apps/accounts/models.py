@@ -11,7 +11,7 @@ class Profile(models.Model):
     avatar = models.ImageField(
         verbose_name='Аватар',
         upload_to='images/avatars/%Y/%m/%d/',
-        default='images/avatars/default.png',
+        default='images/avatars/default.jpg',
         blank=True,
         validators=[FileExtensionValidator(allowed_extensions=('png', 'jpg', 'jpeg'))])
     bio = models.TextField(max_length=500, blank=True, verbose_name='Информация о себе')
