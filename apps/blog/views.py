@@ -25,6 +25,8 @@ class PostListView(ListView):
     context_object_name = 'posts'
     # Ограничение для отображения заданного количества записей на странице
     paginate_by = 5
+    # Переопределение вызова модели для использования кастомного менеджера
+    queryset = Post.custom.all()
 
     def get_context_data(self, **kwargs):
         """Функция get_context_data может использоваться для передачи содержимого или параметров вне модели в шаблон,
@@ -75,10 +77,10 @@ class PostFromCategory(ListView):
         Это работает только для дочерних категорий, если данный объект пустой(при переходе в родительскую категорию),
         то мы получаем все дочерние категории, и выводим все записи из них."""
         self.category = Category.objects.get(slug=self.kwargs['slug'])
-        queryset = Post.objects.filter(category__slug=self.category.slug)
+        queryset = Post.custom.filter(category__slug=self.category.slug)
         if not queryset:
             sub_cat = Category.objects.filter(parent=self.category)
-            queryset = Post.objects.filter(category__in=sub_cat)
+            queryset = Post.custom.filter(category__in=sub_cat)
         return queryset
 
     def get_context_data(self, **kwargs):
