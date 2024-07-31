@@ -12,3 +12,5 @@ urlpatterns = [
 if settings.DEBUG:
     # Для работы media в режиме DEBUG = True
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    # Включение Django Debug Toolbar
+    urlpatterns += [path('__debug__/', include('debug_toolbar.urls'))]

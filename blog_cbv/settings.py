@@ -8,6 +8,10 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+INTERNAL_IPS = [
+    '127.0.0.1',    # Добавляем данный параметр для локальной работы Django Debug Toolbar
+]
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -18,6 +22,7 @@ INSTALLED_APPS = [
 
     'mptt',                             # Приложение для создания древовидной модели в админке
     'django_mptt_admin',                # Приложение для улучшения визуального вида древовидной модели в админке
+    'debug_toolbar',                    # Приложение Django Debug Toolbar для отладки SQL запросов
 
     'apps.blog.apps.BlogConfig',        # Основное приложение Блог
                                         # Приложение для регистрации
@@ -32,6 +37,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',  # Приложение Django Debug Toolbar для отладки SQL запросов
 ]
 
 ROOT_URLCONF = 'blog_cbv.urls'
