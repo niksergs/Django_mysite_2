@@ -61,7 +61,8 @@ class Post(models.Model):
     def get_absolute_url(self):
         """Получаем прямую ссылку на статью.
         Данный метод позволяет получать прямую ссылку на статью, без вызова {% url '' %}
-        Также мы импортировали reverse для формирования правильной ссылки."""
+        Также мы импортировали reverse для формирования правильной ссылки.
+        (Нужно для упрощенного получения ссылки в templates)"""
         return reverse('post_detail', kwargs={'slug': self.slug})
 
     def save(self, *args, **kwargs):
@@ -95,7 +96,7 @@ class Category(MPTTModel):
         db_table = 'app_categories'
 
     def get_absolute_url(self):
-        """Получаем прямую ссылку на категорию"""
+        """Получаем прямую ссылку на категорию (нужно для упрощенного получения ссылки в templates)"""
         return reverse('post_by_category', kwargs={'slug': self.slug})
 
     def __str__(self):

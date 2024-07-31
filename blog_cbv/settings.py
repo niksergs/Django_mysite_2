@@ -25,7 +25,7 @@ INSTALLED_APPS = [
     'debug_toolbar',                    # Приложение Django Debug Toolbar для отладки SQL запросов
 
     'apps.blog.apps.BlogConfig',        # Основное приложение Блог
-                                        # Приложение для регистрации
+    'apps.accounts.apps.AccountsConfig',    # Приложение для регистрации
                                         # Приложение Блог API
 ]
 
