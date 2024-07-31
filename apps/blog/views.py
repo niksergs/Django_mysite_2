@@ -1,6 +1,6 @@
 from django.views.generic import View, ListView, DetailView
 from django.shortcuts import render
-from .models import Post
+from .models import Post, Category
 
 
 # class PostList(View):
@@ -54,4 +54,31 @@ class PostDetailView(DetailView):
         # у которой мы получаем заголовок.
         context = super().get_context_data(**kwargs)
         context['title'] = self.object.title
+        return context
+
+
+class PostFromCategory(ListView):
+    """Представление для отображения записей по категориям, на основе класса ListView"""
+    template_name = 'blog/post_list.html'
+    # Переопределим имя Queryset по умолчанию.
+    context_object_name = 'posts'
+    # Переменная, по которой мы будем работать
+    category = None
+
+    def get_queryset(self):
+        """Метод обработки запросов, здесь мы получаем категорию по определенному slug,
+        а после мы фильтруем запросы статей по категории и возвращаем QuerySet.
+        Это работает только для дочерних категорий, если данный объект пустой(при переходе в родительскую категорию),
+        то мы получаем все дочерние категории, и выводим все записи из них."""
+        self.category = Category.objects.get(slug=self.kwargs['slug'])
+        queryset = Post.objects.filter(category__slug=self.category.slug)
+        if not queryset:
+            sub_cat = Category.objects.filter(parent=self.category)
+            queryset = Post.objects.filter(category__in=sub_cat)
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        """В этом методе передаем <title></title> категории в наш шаблон"""
+        context = super().get_context_data(**kwargs)
+        context['title'] = f'Записи из категории: {self.category.title}'
         return context
