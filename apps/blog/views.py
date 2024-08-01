@@ -1,6 +1,7 @@
-from django.views.generic import View, ListView, DetailView
+from django.views.generic import View, ListView, DetailView, CreateView
 from django.shortcuts import render
 from .models import Post, Category
+from .forms import PostCreateForm
 
 
 # class PostList(View):
@@ -46,7 +47,8 @@ class PostListView(ListView):
 
 class PostDetailView(DetailView):
     """PostDetail на основе класса DetailView"""
-    model = Post        # Название нашей модели
+    # Название нашей модели
+    model = Post
     # По умолчанию DetailView ищет шаблон с префиксом имени модели и суффиксом _detail.html, если не установлено иное.
     template_name = 'blog/post_detail.html'
     # Переопределим имя Queryset по умолчанию.
@@ -88,3 +90,26 @@ class PostFromCategory(ListView):
         context = super().get_context_data(**kwargs)
         context['title'] = f'Записи из категории: {self.category.title}'
         return context
+
+
+class PostCreateView(CreateView):
+    """Представление: создание материалов на сайте"""
+    # Указывает модель, с которой будет работать представление PostCreateView.
+    model = Post
+    # Указываем шаблон, который будет использоваться для отображения формы создания поста.
+    template_name = 'blog/post_create.html'
+    # Указывает, какую форму использовать для создания новой записи.
+    form_class = PostCreateForm
+
+    def get_context_data(self, **kwargs):
+        """Передаем заголовок для <title> нашего шаблона."""
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Добавление статьи на сайт'
+        return context
+
+    def form_valid(self, form):
+        """Проверяем нашу форму, а также сохраняем автором текущего пользователя на странице,
+        которого получаем из запроса self.request.user"""
+        form.instance.author = self.request.user
+        form.save()
+        return super().form_valid(form)

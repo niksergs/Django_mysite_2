@@ -16,7 +16,7 @@ class UserUpdateForm(forms.ModelForm):
                                 widget=forms.TextInput(attrs={"class": "form-control mb-1"}))
 
     class Meta:
-        model =User
+        model = User
         fields = ('username', 'email', 'first_name', 'last_name')
 
     def clean_email(self):
