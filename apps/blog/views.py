@@ -8,7 +8,7 @@ from django.shortcuts import render
 
 # Миксин, который дает возможность добавлять материалы только после авторизации пользователя на сайте.
 from django.contrib.auth.mixins import LoginRequiredMixin
-# Миксин уведомления для представления обновления материала
+# Миксин уведомления
 from django.contrib.messages.views import SuccessMessageMixin
 # Миксин для добавления возможности редактирования статьи только автором или админом
 from ..services.mixins import AuthorRequiredMixin
