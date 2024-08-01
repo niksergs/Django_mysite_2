@@ -5,10 +5,14 @@ from django.views.generic import (View,
                                   UpdateView,
                                   )
 from django.shortcuts import render
+
 # Миксин, который дает возможность добавлять материалы только после авторизации пользователя на сайте.
 from django.contrib.auth.mixins import LoginRequiredMixin
 # Миксин уведомления для представления обновления материала
 from django.contrib.messages.views import SuccessMessageMixin
+# Миксин для добавления возможности редактирования статьи только автором или админом
+from ..services.mixins import AuthorRequiredMixin
+
 from .models import Post, Category
 from .forms import (PostCreateForm,
                     PostUpdateForm,
@@ -131,7 +135,7 @@ class PostCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         return super().form_valid(form)
 
 
-class PostUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
+class PostUpdateView(AuthorRequiredMixin, SuccessMessageMixin, UpdateView):
     """Представление: обновление материала на сайте"""
     model = Post
     template_name = 'blog/post_update.html'
