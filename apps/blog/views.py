@@ -1,7 +1,14 @@
-from django.views.generic import View, ListView, DetailView, CreateView
+from django.views.generic import (View,
+                                  ListView,
+                                  DetailView,
+                                  CreateView,
+                                  UpdateView,
+                                  )
 from django.shortcuts import render
 from .models import Post, Category
-from .forms import PostCreateForm
+from .forms import (PostCreateForm,
+                    PostUpdateForm,
+                    )
 
 
 # class PostList(View):
@@ -17,7 +24,8 @@ from .forms import PostCreateForm
 
 class PostListView(ListView):
     """PostList на основе класса ListView"""
-    model = Post        # Название нашей модели
+    # Название используемой модели
+    model = Post
     # По умолчанию ListView ищет шаблон с префиксом имени модели и суффиксом _list.html, если не установлено иное.
     # Это можно переопределить, установив атрибут template_name
     template_name = 'blog/post_list.html'
@@ -47,7 +55,7 @@ class PostListView(ListView):
 
 class PostDetailView(DetailView):
     """PostDetail на основе класса DetailView"""
-    # Название нашей модели
+    # Название используемой модели
     model = Post
     # По умолчанию DetailView ищет шаблон с префиксом имени модели и суффиксом _detail.html, если не установлено иное.
     template_name = 'blog/post_detail.html'
@@ -111,5 +119,23 @@ class PostCreateView(CreateView):
         """Проверяем нашу форму, а также сохраняем автором текущего пользователя на странице,
         которого получаем из запроса self.request.user"""
         form.instance.author = self.request.user
+        form.save()
+        return super().form_valid(form)
+
+
+class PostUpdateView(UpdateView):
+    """Представление: обновление материала на сайте"""
+    model = Post
+    template_name = 'blog/post_update.html'
+    context_object_name = 'post'
+    form_class = PostUpdateForm
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = f'Обновление статьи: {self.object.title}'
+        return context
+
+    def form_valid(self, form):
+        # form.instance.updater = self.request.user
         form.save()
         return super().form_valid(form)
