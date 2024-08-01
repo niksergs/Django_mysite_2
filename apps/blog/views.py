@@ -5,6 +5,10 @@ from django.views.generic import (View,
                                   UpdateView,
                                   )
 from django.shortcuts import render
+# Миксин, который дает возможность добавлять материалы только после авторизации пользователя на сайте.
+from django.contrib.auth.mixins import LoginRequiredMixin
+# Миксин уведомления для представления обновления материала
+from django.contrib.messages.views import SuccessMessageMixin
 from .models import Post, Category
 from .forms import (PostCreateForm,
                     PostUpdateForm,
@@ -100,7 +104,7 @@ class PostFromCategory(ListView):
         return context
 
 
-class PostCreateView(CreateView):
+class PostCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     """Представление: создание материалов на сайте"""
     # Указывает модель, с которой будет работать представление PostCreateView.
     model = Post
@@ -108,6 +112,10 @@ class PostCreateView(CreateView):
     template_name = 'blog/post_create.html'
     # Указывает, какую форму использовать для создания новой записи.
     form_class = PostCreateForm
+    # Если пользователь не авторизован, то его перенаправляет на указанную страницу
+    login_url = 'home'
+    # Уведомление при успешном обновлении материала
+    success_message = 'Запись была успешно добавлена!'
 
     def get_context_data(self, **kwargs):
         """Передаем заголовок для <title> нашего шаблона."""
@@ -123,12 +131,16 @@ class PostCreateView(CreateView):
         return super().form_valid(form)
 
 
-class PostUpdateView(UpdateView):
+class PostUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     """Представление: обновление материала на сайте"""
     model = Post
     template_name = 'blog/post_update.html'
     context_object_name = 'post'
     form_class = PostUpdateForm
+    # Если пользователь не авторизован, то его перенаправляет на указанную страницу
+    login_url = 'home'
+    # Уведомление при успешном обновлении материала
+    success_message = 'Запись была успешно обновлена!'
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
