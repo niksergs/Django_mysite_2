@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     'debug_toolbar',                    # Приложение Django Debug Toolbar для отладки SQL запросов
     'taggit',                           # Приложение для реализации функции тегов
     'django_recaptcha',                 # Приложение reCAPTCHA для защиты от спам ботов
+    'ckeditor_uploader',                # HTML-редактор, который встраивается в веб-страницы
+    'ckeditor',                         # HTML-редактор, который встраивается в веб-страницы
 
     'apps.blog.apps.BlogConfig',            # Основное приложение Блог
     'apps.accounts.apps.AccountsConfig',    # Приложение для регистрации
@@ -117,3 +119,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Google reCAPTCHA
 RECAPTCHA_PUBLIC_KEY = os.environ.get('RECAPTCHA_PUBLIC_KEY')
 RECAPTCHA_PRIVATE_KEY = os.environ.get('RECAPTCHA_PRIVATE_KEY')
+
+# Конфигурация HTML-редактора
+CKEDITOR_UPLOAD_PATH = "uploads/"
+CKEDITOR_CONFIGS = {
+    'awesome_ckeditor': {
+        'toolbar': 'full',
+        'height': 300,
+    },
+}

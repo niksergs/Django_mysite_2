@@ -1,4 +1,5 @@
 from django import forms
+from ckeditor.widgets import CKEditorWidget     # Виджет HTML-редактор
 from .models import (Post,
                      Comment,
                      )
@@ -6,6 +7,8 @@ from .models import (Post,
 
 class PostCreateForm(forms.ModelForm):
     """Форма добавления статей на сайте"""
+    # Подключение виджета HTML-редактора
+    title = forms.CharField(widget=CKEditorWidget(config_name='awesome_ckeditor'))
 
     class Meta:
         model = Post

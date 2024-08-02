@@ -5,6 +5,7 @@ from django.urls import reverse
 from mptt.models import MPTTModel, TreeForeignKey   # Приложение для создания древовидной модели в админке
 from apps.services.utils import unique_slugify      # Генератор уникальных SLUG для моделей, в случае существования такого SLUG.
 from taggit.managers import TaggableManager         # Приложение для реализации функции тегов
+from ckeditor.fields import RichTextField           # HTML-редактор
 
 
 class PostManager(models.Manager):
@@ -25,8 +26,9 @@ class Post(models.Model):
 
     title = models.CharField(verbose_name='Название записи', max_length=255)
     slug = models.SlugField(verbose_name='URL', max_length=255, blank=True)
-    description = models.TextField(verbose_name='Краткое описание', max_length=500)
-    text = models.TextField(verbose_name='Полный текст записи')
+    # Подключаем HTML-редактор
+    description = RichTextField(config_name='awesome_ckeditor', verbose_name='Краткое описание', max_length=500)
+    text = RichTextField(config_name='awesome_ckeditor', verbose_name='Полный текст записи')
     # Включение в модель модели "Категории", для отображения древовидной модели в админке
     category = TreeForeignKey('Category', on_delete=models.PROTECT, related_name='posts', verbose_name='Категория')
     thumbnail = models.ImageField(default='default.jpg',
