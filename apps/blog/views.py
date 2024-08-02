@@ -13,6 +13,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 # Миксин для добавления возможности редактирования статьи только автором или админом
 from ..services.mixins import AuthorRequiredMixin
+# Модель из приложения для реализации функции тегов
+from taggit.models import Tag
 
 from .models import (Post,
                      Category,
@@ -46,7 +48,7 @@ class PostListView(ListView):
     # Это помогает иметь более удобное для работы имя.
     context_object_name = 'posts'
     # Ограничение для отображения заданного количества записей на странице
-    paginate_by = 5
+    paginate_by = 10
     # Переопределение вызова модели для использования кастомного менеджера
     queryset = Post.custom.all()
 
@@ -91,7 +93,7 @@ class PostFromCategory(ListView):
     # Переопределим имя Queryset по умолчанию.
     context_object_name = 'posts'
     # Ограничение для отображения заданного количества записей на странице
-    paginate_by = 5
+    paginate_by = 10
     # Переменная, по которой мы будем работать
     category = None
 
@@ -111,6 +113,24 @@ class PostFromCategory(ListView):
         """В этом методе передаем <title></title> категории в наш шаблон"""
         context = super().get_context_data(**kwargs)
         context['title'] = f'Записи из категории: {self.category.title}'
+        return context
+
+
+class PostByTagListView(ListView):
+    model = Post
+    template_name = 'blog/post_list.html'
+    context_object_name = 'posts'
+    paginate_by = 10
+    tag = None
+
+    def get_queryset(self):
+        self.tag = Tag.objects.get(slug=self.kwargs['tag'])
+        queryset = Post.objects.filter(tags__slug=self.tag.slug)
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = f'Статьи по тегу: {self.tag.name}'
         return context
 
 

@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.urls import reverse
 from mptt.models import MPTTModel, TreeForeignKey   # Приложение для создания древовидной модели в админке
 from apps.services.utils import unique_slugify      # Генератор уникальных SLUG для моделей, в случае существования такого SLUG.
+from taggit.managers import TaggableManager         # Приложение для реализации функции тегов
 
 
 class PostManager(models.Manager):
@@ -46,6 +47,8 @@ class Post(models.Model):
     # Установка кастомного менеджера для модели
     objects = models.Manager()
     custom = PostManager()
+    # Поле приложения для реализации функции тегов
+    tags = TaggableManager()
 
     class Meta:
         db_table = 'blog_post'

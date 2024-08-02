@@ -23,10 +23,11 @@ INSTALLED_APPS = [
     'mptt',                             # Приложение для создания древовидной модели в админке
     'django_mptt_admin',                # Приложение для улучшения визуального вида древовидной модели в админке
     'debug_toolbar',                    # Приложение Django Debug Toolbar для отладки SQL запросов
+    'taggit',                           # Приложение для реализации функции тегов
 
-    'apps.blog.apps.BlogConfig',        # Основное приложение Блог
+    'apps.blog.apps.BlogConfig',            # Основное приложение Блог
     'apps.accounts.apps.AccountsConfig',    # Приложение для регистрации
-                                        # Приложение Блог API
+                                            # Приложение Блог API
 ]
 
 MIDDLEWARE = [
