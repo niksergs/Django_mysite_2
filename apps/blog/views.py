@@ -4,18 +4,23 @@ from django.views.generic import (View,
                                   CreateView,
                                   UpdateView,
                                   )
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.http import JsonResponse
 
-# Миксин, который дает возможность добавлять материалы только после авторизации пользователя на сайте.
+# Миксин, который дает возможность работать с материалами только после авторизации пользователя на сайте.
 from django.contrib.auth.mixins import LoginRequiredMixin
 # Миксин уведомления
 from django.contrib.messages.views import SuccessMessageMixin
 # Миксин для добавления возможности редактирования статьи только автором или админом
 from ..services.mixins import AuthorRequiredMixin
 
-from .models import Post, Category
+from .models import (Post,
+                     Category,
+                     Comment,
+                     )
 from .forms import (PostCreateForm,
                     PostUpdateForm,
+                    CommentCreateForm,
                     )
 
 
@@ -76,6 +81,7 @@ class PostDetailView(DetailView):
         # у которой мы получаем заголовок.
         context = super().get_context_data(**kwargs)
         context['title'] = self.object.title
+        context['form'] = CommentCreateForm()
         return context
 
 
@@ -155,3 +161,50 @@ class PostUpdateView(AuthorRequiredMixin, SuccessMessageMixin, UpdateView):
         # form.instance.updater = self.request.user
         form.save()
         return super().form_valid(form)
+
+
+class CommentCreateView(LoginRequiredMixin, CreateView):
+    """Представление на основе класса CreateView,
+    которое позволяет обрабатывать форму создания комментария в AJAX"""
+    model = Comment
+    form_class = CommentCreateForm
+
+    def is_ajax(self):
+        """Метод is_ajax() возвращает True, если запрос был сделан через AJAX, и False в противном случае."""
+        return self.request.headers.get('X-Requested-With') == 'XMLHttpRequest'
+
+    def form_invalid(self, form):
+        """Метод form_invalid() вызывается, когда форма создания комментария не проходит валидацию.
+        Если запрос был через AJAX, то возвращается JsonResponse с ошибкой,
+        иначе вызывается родительский метод form_invalid()."""
+        if self.is_ajax():
+            return JsonResponse({'error': form.errors}, status=400)
+        return super().form_invalid(form)
+
+    def form_valid(self, form):
+        """Метод form_valid() вызывается, когда форма создания комментария прошла валидацию.
+        В нем сохраняется новый комментарий,
+        и возвращается успешный ответ с атрибутами в виде json с помощью JsonResponse,
+        в случае, если это был не AJAX запрос, то делаем редирект пользователя на статью."""
+        comment = form.save(commit=False)
+        comment.post_id = self.kwargs.get('pk')
+        comment.author = self.request.user
+        comment.parent_id = form.cleaned_data.get('parent')
+        comment.save()
+
+        if self.is_ajax():
+            return JsonResponse({
+                'is_child': comment.is_child_node(),
+                'id': comment.id,
+                'author': comment.author.username,
+                'parent_id': comment.parent_id,
+                'time_create': comment.time_create.strftime('%Y-%m-%d %H:%M:%S'),
+                'avatar': comment.author.profile.avatar.url,
+                'content': comment.content,
+                'get_absolute_url': comment.author.profile.get_absolute_url()
+            }, status=200)
+
+        return redirect(comment.post.get_absolute_url())
+
+    def handle_no_permission(self):
+        return JsonResponse({'error': 'Необходимо авторизоваться для добавления комментариев'}, status=400)
