@@ -2,6 +2,10 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
 
+# Приложение reCAPTCHA для защиты от спам ботов
+from django_recaptcha.fields import ReCaptchaField
+
+from blog_cbv import settings
 from .models import Profile
 
 
@@ -73,17 +77,30 @@ class UserRegisterForm(UserCreationForm):
             self.fields[field].widget.attrs.update({"class": "form-control", "autocomplete": "off"})
 
 
+class DebugReCaptchaField(ReCaptchaField):
+    """Дочерняя Капча для работы в DEBUG режиме,
+    так как для ReCaptchaField нужен SSL сертификат."""
+
+    def clean(self, values):
+        if settings.DEBUG:
+            if len(values) > 0:
+                return values[0]
+        return super().clean(values)
+
+
 class UserLoginForm(AuthenticationForm):
     """Форма авторизации на сайте"""
+    recaptcha = DebugReCaptchaField()
+
+    class Meta:
+        model = User
+        fields = ['username', 'password', 'recaptcha']
 
     def __init__(self, *args, **kwargs):
         """Обновление стилей формы авторизации"""
         super().__init__(*args, **kwargs)
-        self.fields['username'].widget.attrs['plaseholder'] = 'Логин пользователя'
-        self.fields['password'].widget.attrs['plaseholder'] = 'Пароль пользователя'
+        self.fields['username'].widget.attrs['placeholder'] = 'Логин пользователя'
+        self.fields['username'].widget.attrs['class'] = 'form-control'
+        self.fields['password'].widget.attrs['placeholder'] = 'Пароль пользователя'
+        self.fields['password'].widget.attrs['class'] = 'form-control'
         self.fields['username'].label = 'Логин'
-        for field in self.fields:
-            self.fields[field].widget.attrs.update({
-                'class': 'form-control',
-                'autocomplete': 'off',
-            })

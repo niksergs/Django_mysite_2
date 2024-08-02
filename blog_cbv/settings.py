@@ -1,10 +1,23 @@
 from pathlib import Path
+import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-_xi)5+2p7dn(-+t6-9ennrn9(_mceajrqbp!b^ci_cr99=$$7d'
+# Загрузка переменных окружения из .env.local
+def load_env_file(filepath):
+    with open(filepath) as f:
+        for line in f:
+            if line.strip() and not line.startswith('#'):
+                key, value = line.strip().split('=', 1)
+                os.environ[key] = value
 
-DEBUG = True
+
+load_env_file('.env.local')
+
+
+SECRET_KEY = os.environ.get('SECRET_KEY')
+
+DEBUG = bool(int(os.environ.get('DEBUG')))
 
 ALLOWED_HOSTS = []
 
@@ -24,6 +37,7 @@ INSTALLED_APPS = [
     'django_mptt_admin',                # Приложение для улучшения визуального вида древовидной модели в админке
     'debug_toolbar',                    # Приложение Django Debug Toolbar для отладки SQL запросов
     'taggit',                           # Приложение для реализации функции тегов
+    'django_recaptcha',                 # Приложение reCAPTCHA для защиты от спам ботов
 
     'apps.blog.apps.BlogConfig',            # Основное приложение Блог
     'apps.accounts.apps.AccountsConfig',    # Приложение для регистрации
@@ -99,3 +113,7 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = (BASE_DIR / 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Google reCAPTCHA
+RECAPTCHA_PUBLIC_KEY = os.environ.get('RECAPTCHA_PUBLIC_KEY')
+RECAPTCHA_PRIVATE_KEY = os.environ.get('RECAPTCHA_PRIVATE_KEY')
