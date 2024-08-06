@@ -11,3 +11,4 @@ notes
 /static/debug_toolbar/
 /static/django_mptt_admin/
 /static/mptt/
+/cache/

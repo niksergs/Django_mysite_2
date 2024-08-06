@@ -3,6 +3,8 @@ from django.core.validators import FileExtensionValidator
 from django.contrib.auth.models import User
 from django.urls import reverse
 from apps.services.utils import unique_slugify      # Генератор уникальных SLUG для моделей, в случае существования такого SLUG.
+from django.utils import timezone
+from django.core.cache import cache
 
 
 class Profile(models.Model):
@@ -36,3 +38,11 @@ class Profile(models.Model):
     def get_absolute_url(self):
         """Ссылка на профиль (нужно для упрощенного получения ссылки в templates)"""
         return reverse('profile_detail', kwargs={'slug': self.slug})
+
+    def is_online(self):
+        """Метод is_online(), который проверяет,
+        был ли пользователь онлайн в течение последних 5 минут"""
+        last_seen = cache.get(f'last-seen-{self.user.id}')
+        if last_seen is not None and timezone.now() < last_seen +timezone.timedelta(seconds=300):
+            return True
+        return False

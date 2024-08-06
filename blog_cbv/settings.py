@@ -55,7 +55,16 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',  # Приложение Django Debug Toolbar для отладки SQL запросов
+    'apps.accounts.middleware.ActiveUserMiddleware',    # Middleware для отображения статуса пользователей
 ]
+
+# Файловая система кэширования (для отображения статуса пользователей)
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': (BASE_DIR / 'cache'),
+    }
+}
 
 ROOT_URLCONF = 'blog_cbv.urls'
 
