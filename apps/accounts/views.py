@@ -51,7 +51,7 @@ class ProfileUpdateView(UpdateView):
             context['user_form'] = UserUpdateForm(instance=self.request.user)
         return context
 
-    def form_valid(self,form):
+    def form_valid(self, form):
         context = self.get_context_data()
         user_form = context['user_form']
         # Используем transaction.atomic, для корректного сохранения данных двух форм в нашей БД
