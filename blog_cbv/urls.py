@@ -5,6 +5,10 @@ from django.conf import settings
 from apps.blog.feeds import LatestPostFeed
 
 
+handler403 = 'apps.blog.views.tr_handler403'    # Кастомная обработка ошибки 403
+handler404 = 'apps.blog.views.tr_handler404'    # Кастомная обработка ошибки 404
+handler500 = 'apps.blog.views.tr_handler500'    # Кастомная обработка ошибки 500
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('apps.blog.urls')),
